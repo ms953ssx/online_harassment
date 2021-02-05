@@ -23,7 +23,7 @@ es = Elasticsearch()
 
 
 def get_tweets(search_term, date_since):
-    tweets = tw.Cursor(api.search, q=search_term, lang="en", since=date_since).items(15)
+    tweets = tw.Cursor(api.search, q=search_term, lang="en", since=date_since, tweet_mode="extended").items(500)
     return tweets
 
 def post_elastic(tweet_id, content):
