@@ -1,13 +1,16 @@
 import os
 import tweepy as tw
 import pandas as pd
-from elasticsearch import Elasticsearch
+import csv
+import sqlite3
 from datetime import datetime
 
 consumer_key = os.environ.get("CONSUMER_KEY")  # Add your API key here
 consumer_secret = os.environ.get("CONSUMER_SECRET")  # Add your API secret key here
 access_token = os.environ.get("ACCESS_TOKEN")
 access_secret = os.environ.get("ACCESS_SECRET")
+
+bad_words = ['queer', 'gimp', 'slut', 'fag', 'faggot', 'fags', 'fudgepacker', 'fudge+packer', 'poof','poofter', 'pansy', 'sissy', 'bender', 'batty', 'ponce', 'jiggalo', 'dyke', 'rug+muncher', 'lesbo', 'tranny', 'trannie', 'transvestite', 'ladyboy', 'trap', 'HeShe', 'shemale', 'bitch', 'switch+hitter']
 
 auth = tw.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_secret)
@@ -19,28 +22,25 @@ try:
 except:
     print("Error during authentication")
 
-es = Elasticsearch()
-
-
-def get_tweets(search_term, date_since):
-    tweets = tw.Cursor(api.search, q=search_term, lang="en", since=date_since, tweet_mode="extended").items(500)
-    return tweets
-
-def post_elastic(tweet_id, content):
-    res = es.index(index="test-index", id=tweet_id, body=content)
-    print(res['result'])
-
-def store_id(tweet_id):
-    f = open("tweet_ids.txt", "a")
-    f.write(str(tweet_id))
-    f.write("\n")
-    f.close()
 
 def main(): 
-    tweets = get_tweets("Maradona", "2021-01-01")
-    for tweet in tweets:
-        store_id(tweet.id)
-        post_elastic(tweet.id, tweet._json)
+    conn = sqlite3.connect('tweets.db')
+    print("Opened Database successfully")
+    
+    query = " OR ".join(bad_words) + " exclude:retweets"
+    with conn:
+        for tweet in tw.Cursor(api.search,
+                                   q = query,
+                                   lang = "en",
+                                   tweet_mode='extended').items(50):
+            sql = '''
+                INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET) \
+                VALUES (?,?,?)
+                '''
+            cur = conn.cursor()
+            cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text.encode('utf-8')))
+            conn.commit()
+            print(tweet.id, tweet.user.id, tweet.full_text)
 
 if __name__ == "__main__":
     main()
