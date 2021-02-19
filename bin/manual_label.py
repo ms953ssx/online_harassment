@@ -6,6 +6,8 @@ def main():
 
     with conn:
         cur = conn.cursor()
+        cur.execute("SELECT COUNT(USERID) FROM TWEETS WHERE ISHARASSMENT IS NOT NULL")
+        print(cur.fetchall())
         cur.execute("SELECT * FROM TWEETS WHERE USERID NOT IN (SELECT USERID FROM TWEETS ORDER BY RANDOM() LIMIT 200)")
 
         for tweet in cur.fetchall():
