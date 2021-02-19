@@ -38,7 +38,7 @@ def main():
                 VALUES (?,?,?)
                 '''
             cur = conn.cursor()
-            cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text)))
+            cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text))
             conn.commit()
             print(tweet.id, tweet.user.id, tweet.full_text)
 
