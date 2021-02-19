@@ -10,7 +10,9 @@ consumer_secret = os.environ.get("CONSUMER_SECRET")  # Add your API secret key h
 access_token = os.environ.get("ACCESS_TOKEN")
 access_secret = os.environ.get("ACCESS_SECRET")
 
-bad_words = ['fag', 'faggot', 'fags', 'fudgepacker', 'fudge+packer', 'poofter', 'pansy', 'sissy', 'bender', 'batty', 'ponce', 'dyke', 'rug+muncher', 'lesbo', 'tranny', 'trannie', 'transvestite', 'ladyboy', 'HeShe', 'shemale', 'switch+hitter']
+homosexual_terms = ['fag', 'faggot', 'fags', 'fudgepacker', 'fudge+packer', 'poofter', 'pansy', 'bender', 'batty', 'ponce', 'dyke', 'rug+muncher', 'lesbo']
+transgender_terms = ['tranny', 'trannie', 'transvestite', 'ladyboy', 'HeShe', 'shemale']
+bisexual_terms = ['switch+hitter', 'gay+for+pay']
 
 auth = tw.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_secret)
@@ -27,7 +29,7 @@ def main():
     conn = sqlite3.connect('tweets.db')
     print("Opened Database successfully")
 
-    query = " OR ".join(bad_words) + " exclude:retweets"
+    query = " OR ".join(homosexual_terms) + " OR ".join(transgender_terms) + " OR ".join(bisexual_terms) + " exclude:retweets"
     count = 0
     with conn:
         try:
@@ -35,15 +37,27 @@ def main():
                                    q = query,
                                    lang = "en",
                                    tweet_mode="extended",
-                                   since="2020-02-01").items(2500):
+                                   since="2020-02-15").items(900):
+
+                #Check if tweet content contains word from bad terms lists
+                is_type_homosexual = 0
+                is_type_transgender = 0
+                is_type_bisexual = 0
+                if any(word in tweet.full_text for word in homosexual_terms):
+                    is_type_homosexual = 1
+                if any(word in tweet.full_text for word in transgender_terms):
+                    is_type_transgender = 1
+                if any(word in tweet.full_text for word in bisexual_terms):
+                    is_type_bisexual = 1
+
                 sql = '''
-                    INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET) \
-                    VALUES (?,?,?)
+                    INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET, ISTYPEHOMOSEXUAL, ISTYPETRANSGENDER, ISTYPEBISEXUAL) \
+                    VALUES (?,?,?,?,?,?)
                     '''
                 cur = conn.cursor()
-                cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text))
+                cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text, is_type_homosexual, is_type_transgender, is_type_bisexual))
                 conn.commit()
-                print(tweet.id, tweet.user.id, tweet.full_text)
+                print(tweet.id, tweet.user.id, tweet.full_text, is_type_homosexual, is_type_transgender, is_type_bisexual)
                 count+=1
         except tw.TweepError as err:
             print(err)
