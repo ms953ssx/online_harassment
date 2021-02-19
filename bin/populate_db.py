@@ -26,13 +26,15 @@ except:
 def main(): 
     conn = sqlite3.connect('tweets.db')
     print("Opened Database successfully")
-    
+
     query = " OR ".join(bad_words) + " exclude:retweets"
+    count = 0
     with conn:
         for tweet in tw.Cursor(api.search,
-                                   q = query,
-                                   lang = "en",
-                                   tweet_mode='extended').items(2500):
+                               q = query,
+                               lang = "en",
+                               tweet_mode="extended",
+                               since="2020-02-01").items(2500):
             sql = '''
                 INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET) \
                 VALUES (?,?,?)
@@ -41,6 +43,8 @@ def main():
             cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text))
             conn.commit()
             print(tweet.id, tweet.user.id, tweet.full_text)
+            count+=1
+        print("Stored: ", count, " tweets.")
 
 if __name__ == "__main__":
     main()
