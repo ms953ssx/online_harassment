@@ -13,7 +13,7 @@ def main():
         for tweet in cur.fetchall():
             tweet_id, user_id, tweet_txt, is_harassment = tweet
             print("Num of labelled tweets:", count)
-            print(tweet_txt, is_harassment)
+            print("\nTweet ID: ", tweet_id, "\nTweet Content: ", tweet_txt, "\nCurrent label: ", is_harassment)
             x = "blank"
             while x.lower() != 'y' and x.lower() != 'n':
                 x = input("\nIs this harassment? Y/N: ")
