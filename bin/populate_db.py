@@ -30,20 +30,24 @@ def main():
     query = " OR ".join(bad_words) + " exclude:retweets"
     count = 0
     with conn:
-        for tweet in tw.Cursor(api.search,
-                               q = query,
-                               lang = "en",
-                               tweet_mode="extended",
-                               since="2020-02-01").items(2500):
-            sql = '''
-                INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET) \
-                VALUES (?,?,?)
-                '''
-            cur = conn.cursor()
-            cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text))
-            conn.commit()
-            print(tweet.id, tweet.user.id, tweet.full_text)
-            count+=1
+        try:
+            for tweet in tw.Cursor(api.search,
+                                   q = query,
+                                   lang = "en",
+                                   tweet_mode="extended",
+                                   since="2020-02-01").items(2500):
+                sql = '''
+                    INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET) \
+                    VALUES (?,?,?)
+                    '''
+                cur = conn.cursor()
+                cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text))
+                conn.commit()
+                print(tweet.id, tweet.user.id, tweet.full_text)
+                count+=1
+        except tw.TweepError as err:
+            print(err)
+
         print("Stored: ", count, " tweets.")
 
 if __name__ == "__main__":
