@@ -1,6 +1,0 @@
-Plan for next week:
-
-overhaul backend to use an SQl database rather than Elasticsearch
-generate *real* dataset containing problematic tweets 
-Manually label a small subset of tweets (300-500) for better defining our labelling functions
-Train our labelling functions to apply to a classifier.
