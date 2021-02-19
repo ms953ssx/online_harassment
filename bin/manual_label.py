@@ -22,9 +22,11 @@ def main():
                 elif x.lower() == 'n':
                     lbl = 0
                 elif x == "?":
-                    continue
+                    break
                 else:
                     print("\ninvalid input\n")
+            if x == "?":
+                continue
             sql = '''UPDATE TWEETS
                      SET ISHARASSMENT = ?
                      WHERE TWEETID = ? '''
