@@ -10,7 +10,6 @@ conn.execute('''CREATE TABLE TWEETS
             ISTYPEHOMOSEXUAL Boolean,
             ISTYPETRANSGENDER Boolean,
             ISTYPEBISEXUAL Boolean,
-            ISTYPERACIAL Boolean,
             ISHARASSMENT Boolean);''')
 
 print ("Table created successfully")
