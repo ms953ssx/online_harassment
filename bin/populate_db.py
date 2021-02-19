@@ -10,7 +10,7 @@ consumer_secret = os.environ.get("CONSUMER_SECRET")  # Add your API secret key h
 access_token = os.environ.get("ACCESS_TOKEN")
 access_secret = os.environ.get("ACCESS_SECRET")
 
-bad_words = ['queer', 'gimp', 'slut', 'whore', 'fag', 'faggot', 'fags', 'fudgepacker', 'fudge+packer', 'poof','poofter', 'pansy', 'sissy', 'bender', 'batty', 'ponce', 'jiggalo', 'dyke', 'rug+muncher', 'lesbo', 'tranny', 'trannie', 'transvestite', 'ladyboy', 'trap', 'HeShe', 'shemale', 'switch+hitter']
+bad_words = ['fag', 'faggot', 'fags', 'fudgepacker', 'fudge+packer', 'poofter', 'pansy', 'sissy', 'bender', 'batty', 'ponce', 'dyke', 'rug+muncher', 'lesbo', 'tranny', 'trannie', 'transvestite', 'ladyboy', 'HeShe', 'shemale', 'switch+hitter']
 
 auth = tw.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_secret)
