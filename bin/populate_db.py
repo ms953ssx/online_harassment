@@ -32,7 +32,7 @@ def main():
         for tweet in tw.Cursor(api.search,
                                    q = query,
                                    lang = "en",
-                                   tweet_mode='extended').items(50):
+                                   tweet_mode='extended').items(2500):
             sql = '''
                 INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET) \
                 VALUES (?,?,?)
