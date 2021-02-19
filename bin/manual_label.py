@@ -21,6 +21,8 @@ def main():
                     lbl = 1
                 elif x.lower() == 'n':
                     lbl = 0
+                elif x == "?":
+                    continue
                 else:
                     print("\ninvalid input\n")
             sql = '''UPDATE TWEETS
