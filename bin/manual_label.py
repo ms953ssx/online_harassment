@@ -11,9 +11,9 @@ def main():
         cur.execute("SELECT * FROM TWEETS WHERE ISHARASSMENT IS NULL ORDER BY RANDOM() LIMIT 200")
 
         for tweet in cur.fetchall():
-            tweet_id, user_id, tweet_txt, is_type_homosexual, is_type_transgender, is_type_bisexual, is_harassment = tweet
+            tweet_id, user_id, tweet_txt, is_type_homosexual, is_type_transgender, is_type_bisexual, has_pronouns, is_harassment = tweet
             print("\nNum of labelled tweets:", count)
-            print("\n\nTweet ID: ", tweet_id, "\nTweet Content: ", tweet_txt, "\nCurrent label: ", is_harassment)
+            print("\n\nTweet ID: ", tweet_id, "\nTweet Content: ", tweet_txt, "\nHas Pronouns in Bio: ", has_pronouns, "\nCurrent label: ", is_harassment)
             x = "blank"
             while x.lower() != 'y' and x.lower() != 'n' and x.lower() != 'd':
                 x = input("\nIs this harassment? Y/N: ")

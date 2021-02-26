@@ -67,7 +67,7 @@ def main():
                 cur = conn.cursor()
                 cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text, is_type_homosexual, is_type_transgender, is_type_bisexual))
                 conn.commit()
-                print(tweet.id, tweet.user.id, tweet.full_text, is_type_homosexual, is_type_transgender, is_type_bisexual)
+                print(tweet.id, tweet.user.id, tweet.full_text, is_type_homosexual, is_type_transgender, is_type_bisexual, has_pronouns)
                 count+=1
         except tw.TweepError as err:
             print(err)
