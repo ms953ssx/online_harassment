@@ -61,11 +61,11 @@ def main():
                 if any(word in tweet.user.description for word in pronoun_list):
                     has_pronouns = 1
                 sql = '''
-                    INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET, ISTYPEHOMOSEXUAL, ISTYPETRANSGENDER, ISTYPEBISEXUAL) \
-                    VALUES (?,?,?,?,?,?)
+                    INSERT OR REPLACE INTO TWEETS(TWEETID, USERID, TWEET, ISTYPEHOMOSEXUAL, ISTYPETRANSGENDER, ISTYPEBISEXUAL, HASPRONOUNS) \
+                    VALUES (?,?,?,?,?,?,?)
                     '''
                 cur = conn.cursor()
-                cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text, is_type_homosexual, is_type_transgender, is_type_bisexual))
+                cur.execute(sql, (tweet.id, tweet.user.id, tweet.full_text, is_type_homosexual, is_type_transgender, is_type_bisexual, has_pronouns))
                 conn.commit()
                 print(tweet.id, tweet.user.id, tweet.full_text, is_type_homosexual, is_type_transgender, is_type_bisexual, has_pronouns)
                 count+=1
