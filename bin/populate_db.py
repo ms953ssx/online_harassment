@@ -11,7 +11,7 @@ consumer_secret = os.environ.get("CONSUMER_SECRET")  # Add your API secret key h
 access_token = os.environ.get("ACCESS_TOKEN")
 access_secret = os.environ.get("ACCESS_SECRET")
 
-homosexual_terms = ['fag', 'faggot', 'fags', 'fudgepacker', 'fudge+packer', 'poofter', 'pansy', 'bender', 'batty', 'ponce', 'dyke', 'rug+muncher', 'lesbo']
+homosexual_terms = ['fag', 'faggot', 'fags', 'fudgepacker', 'fudge+packer', 'poofter', 'pansy', 'bender', 'batty+boy', 'ponce', 'dyke', 'rug+muncher', 'lesbo']
 transgender_terms = ['tranny', 'trannie', 'transvestite', 'ladyboy', 'HeShe', 'shemale']
 bisexual_terms = ['switch+hitter', 'gay+for+pay']
 
@@ -45,7 +45,8 @@ def main():
                                    q = query,
                                    lang = "en",
                                    tweet_mode="extended",
-                                   since="2020-03-14").items(900):
+                                   since="2021-03-17",
+                                   until="2021-03-18").items(900):
 
                 #Check if tweet content contains word from bad terms lists
                 is_type_homosexual = 0
