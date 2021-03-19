@@ -1,34 +1,18 @@
 import os
 import tweepy as tw
-from elasticsearch import Elasticsearch
 import json
 import numpy as np
 from snorkel.labeling import labeling_function
 from snorkel.labeling import LFApplier
 from snorkel.labeling import LFAnalysis
 from sklearn import svm
+import sqlite3
 
-
-es = Elasticsearch()
 
 ABSTAIN = -1
 SAFE = 0
-DEATH = 1
+TRUE = 1
 
-
-@labeling_function()
-def rip(x):
-    # Return a label of DEATH if "RIP" in comment text, otherwise ABSTAIN
-    return DEATH if "rip" in x['full_text'].lower() else ABSTAIN
-
-@labeling_function()
-def rest_in_peace(x):
-    # Return a label of DEATH if "RIP" in comment text, otherwise ABSTAIN
-    return DEATH if "rest in peace" in x['full_text'].lower() else ABSTAIN
-
-@labeling_function()
-def died(x):
-    return DEATH if "died" in x['full_text'].lower() else ABSTAIN
 
 @labeling_function()
 def dead(x):
@@ -36,7 +20,6 @@ def dead(x):
 
 def perf_eval(input_dict, lfs):
     return LFAnalysis(L=input_dict, lfs=lfs).lf_summary()
-
 
 
 def make_Ls_matrix(data, LFs):
@@ -57,41 +40,38 @@ def make_Ls_matrix(data, LFs):
 
 def main(): 
     #instantiate labelling functions
-    lfs = [rip, died, dead]
+    lfs = [#insert labelling function names here e.g. slur_in_handle]
     applier = LFApplier(lfs=lfs)
     #Store dict of tweets to labelling function output for performance analysis
     tweet_dict = {}
-    #Open tweet ID file of already stored database entries
-    file1 = open("tweet_ids.txt", "r")
-    Lines = file1.readlines()
-    #Iterate through newline delineated list of stored tweet ids
-    for line in Lines:
+    #Connect to DB
+    conn = sqlite3.connect("tweets.db")
+    #Retrieve Tweets from Database
+    with conn:
+        cur = conn.cursor()
+        #Construct SQL Queries
+        #Obtain all manually labelled tweets from DB
+        cur.execute("SELECT * FROM TWEETS WHERE ISHARASSMENT IS NOT NULL ORDER BY RANDOM()")
+        lab_tweets = cur.fetchall()
+    #Create train test split
+    train, test = train_test_split(lab_tweets, test_size=0.33, random_state=42)
+    
+    #Tweets contain following fields in order:
+    #twid, uid, tweet, is_homophobic, is_transphobic, is_biphobic, has_pronouns, is_harassment   
+    
+    #Run through snorkel labelling function on tweet content
+    classify = applier.apply(train)
+    
         
-        #Strip newline character
-        tweet_id = line.strip()
+    #Output tweet content with output of labeling function for manual review
+    print(train, classify)
         
-        #Search ID in elastic query to retrieve json output
-        tweet = es.get(index="test-index", id=tweet_id)
+        
+    #Build a matrix of LF votes for each tweet
+    LF_Matrix = make_Ls_matrix(tweet_dict, classify)
+    Y_LF_set = np.array(LF_set['label'])
 
-        #Get just tweet content stored in a nested dictionary
-        tweet_json = tweet['_source']
-        
-        #Run through snorkel labelling function on tweet content
-        classify = applier.apply([tweet_json])
-        tweet_dict[tweet_json['full_text']] = classify
-        
-        #Output tweet content with output of labeling function for manual review
-        print(tweet_json['full_text'], classify)
-        
-        
-        #Build a matrix of LF votes for each tweet
-        LF_Matrix = make_Ls_matrix(tweet_dict, classify)
-        Y_LF_set = np.array(LF_set['label'])
-
-        display(lf_summary(sparse.csr_matrix(LF_Matrix), Y=Y_LF_set, lf_names=LF_names.values()))
-
-        #Update elastic database with labelled tweet
-        #post_elastic(classify, tweet, tweet_id)
+    display(lf_summary(sparse.csr_matrix(LF_Matrix), Y=Y_LF_set, lf_names=LF_names.values()))
 
     #Produce performance evaluation metrics to see coverage of our labeling functions
     print(perf_eval(np.concatenate(list(tweet_dict.values())),lfs))
