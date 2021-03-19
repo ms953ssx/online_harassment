@@ -4,8 +4,8 @@ conn = sqlite3.connect('tweets.db')
 print ("Opened database successfully")
 
 conn.execute('''ALTER TABLE TWEETS
-        ADD HASPRONOUNS Boolean;''')
+        ADD AUTO_ISHARASSMENT Boolean;''')
 
-print ("FIELD UPDATED SUCCESSFULLY")
+print ("FIELD ADDED SUCCESSFULLY")
 
 conn.close()

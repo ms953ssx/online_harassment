@@ -1,4 +1,5 @@
 import os
+import re
 import tweepy as tw
 import json
 import numpy as np
@@ -9,14 +10,22 @@ from sklearn import svm
 import sqlite3
 
 
-ABSTAIN = -1
-SAFE = 0
-TRUE = 1
+NEGATIVE = 2
+ABSTAIN = 0
+POSITIVE = 1
 
-
+#Common names that have been found in dataset
+famous_names = r"\b(Van dyke| Ponce de Leon)" 
 @labeling_function()
-def dead(x):
-    return DEATH if "dead" in x['full_text'].lower() else ABSTAIN
+def famous_names(tweet_text):
+    return NEGATIVE if re.search(famous_names, tweet_text.lower()) else ABSTAIN
+
+#Common simple insults
+simple_insults = r"\b(fucking|disgusting|ugly) (fag|faggot|fags|fudgepacker|fudge packer|poofter|pansy|bender|batty boy|ponce|dyke|rug muncher|lesbo|tranny|trannie|transvestite|ladyboy|heshe|shemale|switch hitter)"
+@labeling_function()
+def simple_insults(tweet_text):
+    return POSITIVE if re.search(simple_insults, tweet_text.lower()) else ABSTAIN
+
 
 def perf_eval(input_dict, lfs):
     return LFAnalysis(L=input_dict, lfs=lfs).lf_summary()
@@ -40,7 +49,7 @@ def make_Ls_matrix(data, LFs):
 
 def main(): 
     #instantiate labelling functions
-    lfs = [#insert labelling function names here e.g. slur_in_handle]
+    lfs = [famous_names, ]
     applier = LFApplier(lfs=lfs)
     #Store dict of tweets to labelling function output for performance analysis
     tweet_dict = {}
@@ -57,7 +66,7 @@ def main():
     train, test = train_test_split(lab_tweets, test_size=0.33, random_state=42)
     
     #Tweets contain following fields in order:
-    #twid, uid, tweet, is_homophobic, is_transphobic, is_biphobic, has_pronouns, is_harassment   
+    #twid, uid, tweet, is_homophobic, is_transphobic, is_biphobic, has_pronouns, is_harassment, auto_is_harassment   
     
     #Run through snorkel labelling function on tweet content
     classify = applier.apply(train)
