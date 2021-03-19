@@ -18,7 +18,7 @@ POSITIVE = 1
 l_names_or_places = r"(van dyke|ponce de leon|ponce city|ponce inlet town)" 
 @labeling_function()
 def names_or_places(tweet_text):
-    return NEGATIVE if re.search(l_famous_names, tweet_text.lower()) else ABSTAIN
+    return NEGATIVE if re.search(l_names_or_places, tweet_text.lower()) else ABSTAIN
 
 #Common simple insults
 l_simple_insults = r"(fucking|disgusting|ugly|bitchy|pathetic) (fag|faggot|fags|fudgepacker|fudge packer|poofter|pansy|bender|batty boy|ponce|dyke|rug muncher|lesbo|tranny|trannie|transvestite|ladyboy|heshe|shemale|switch hitter)"
@@ -103,7 +103,7 @@ def make_Ls_matrix(data, LFs):
 
 def main(): 
     #instantiate labelling functions
-    lfs = [famous_names, ]
+    lfs = [names_or_places,simple_insults,term_to_person,descriptive_bad,against_nature,trigger_warning,bender_as_drunk,bender_pop_culture,slang_using_cigarettes,slur_in_handles]
     applier = LFApplier(lfs=lfs)
     #Store dict of tweets to labelling function output for performance analysis
     tweet_dict = {}
