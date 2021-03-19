@@ -45,8 +45,8 @@ def main():
                                    q = query,
                                    lang = "en",
                                    tweet_mode="extended",
-                                   since="2021-03-17",
-                                   until="2021-03-18").items(900):
+                                   since="2021-03-18",
+                                   until="2021-03-19").items(900):
 
                 #Check if tweet content contains word from bad terms lists
                 is_type_homosexual = 0

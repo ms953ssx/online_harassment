@@ -15,16 +15,70 @@ ABSTAIN = 0
 POSITIVE = 1
 
 #Common names that have been found in dataset
-famous_names = r"\b(Van dyke| Ponce de Leon)" 
+l_names_or_places = r"\b(van dyke|ponce de leon|ponce city|ponce inlet town)" 
 @labeling_function()
-def famous_names(tweet_text):
-    return NEGATIVE if re.search(famous_names, tweet_text.lower()) else ABSTAIN
+def names_or_places(tweet_text):
+    return NEGATIVE if re.search(l_famous_names, tweet_text.lower()) else ABSTAIN
 
 #Common simple insults
-simple_insults = r"\b(fucking|disgusting|ugly) (fag|faggot|fags|fudgepacker|fudge packer|poofter|pansy|bender|batty boy|ponce|dyke|rug muncher|lesbo|tranny|trannie|transvestite|ladyboy|heshe|shemale|switch hitter)"
+l_simple_insults = r"\b(fucking|disgusting|ugly|bitchy|pathetic) (fag|faggot|fags|fudgepacker|fudge packer|poofter|pansy|bender|batty boy|ponce|dyke|rug muncher|lesbo|tranny|trannie|transvestite|ladyboy|heshe|shemale|switch hitter)"
 @labeling_function()
 def simple_insults(tweet_text):
-    return POSITIVE if re.search(simple_insults, tweet_text.lower()) else ABSTAIN
+    return POSITIVE if re.search(l_simple_insults, tweet_text.lower()) else ABSTAIN
+
+#Common terms used to identify the subject of a given bad term e.g. "You ***" 
+l_term_to_person = r"\b(that|this|you|shut the fuck up|stfu) (fag|faggot|fags|fudgepacker|fudge packer|poofter|pansy|bender|batty boy|ponce|dyke|rug muncher|lesbo|tranny|trannie|transvestite|ladyboy|heshe|shemale|switch hitter)"
+@labeling_function()
+def term_to_person(tweet_text):
+    return POSITIVE if re.search(l_term_to_person, tweet_text.lower()) else ABSTAIN
+
+#Using term in a descriptive yet derogatory manner
+l_descriptive_bad = r"\b(piece of|like a) (fag|faggot|fags|fudgepacker|fudge packer|poofter|pansy|bender|batty boy|ponce|dyke|rug muncher|lesbo|tranny|trannie|transvestite|ladyboy|heshe|shemale|switch hitter)"
+@labeling_function()
+def descriptive_bad(tweet_text):
+    return POSITIVE if re.search(l_descriptive_bad, tweet_text.lower()) else ABSTAIN
+
+#Stating someone on the LGBT spectrum is unnatural
+l_against_nature = r"\b(against|defying) (god|biology|nature)"
+@labeling_function()
+def against_nature(tweet_text):
+    return POSITIVE if re.search(l_against_nature, tweet_text.lower()) else ABSTAIN
+
+
+#Contains trigger warning
+l_trigger_warnings = r"\b(\/+ *tw|\/* *trigger warning)"
+@labeling_function()
+def trigger_warning(tweet_text):
+    return NEGATIVE if re.search(l_trigger_warnings, tweet_text.lower()) else ABSTAIN
+
+#Using term 'Bender' when talking about drunken stints
+l_bender_as_drunk = r"\b(day|on a) bender"
+@labeling_function()
+def bender_as_drunk(tweet_text):
+    return NEGATIVE if re.search(l_bender_as_drunk, tweet_text.lower()) else ABSTAIN
+
+#Using Bender as a pop culture reference e.g. avatar the last airbender or Futurama reference
+l_bender_pop_culture = r"\b((fender|water|earth|fire|wind|energy) *bender)|futurama.*bender|bender.*futurama|avatar.*bender"
+def bender_pop_culture(tweet_text):
+    return NEGATIVE if re.search(l_bender_pop_culture, tweet_text.lower()) else ABSTAIN
+
+#Using slang term for using cigarettes
+l_slang_using_cigarettes = r"\b((for|smoke|have|smoking|having) (some|a) fags?)|fag ash"
+def slang_using_cigarettes(tweet_text):
+    return NEGATIVE if re.search(l_slang_using_cigarettes, tweet_text.lower()) else ABSTAIN
+
+#Slur is part of a mentioned twitter handle
+l_slur_in_handles = "r\b(@[a-zA-Z0-9_-]*)"
+def slur_in_handles(tweet_text):
+    in_handle = 0
+    bad_terms = ['fag', 'faggot', 'fags', 'fudgepacker', 'fudge+packer', 'poofter', 'pansy', 'bender', 'batty+boy', 'ponce', 'dyke', 'rug+muncher', 'lesbo',['tranny', 'trannie', 'transvestite', 'ladyboy', 'HeShe', 'shemale','switch+hitter', 'gay+for+pay']
+    #check for slur in handle
+    handles = re.search(l_slur_in_handles, tweet_text.lower())
+    for handle in handles:
+        if any(substring in handle for substring in bad_terms):
+            in_handle+=1
+    
+    return NEGATIVE if in_handle>0 else ABSTAIN
 
 
 def perf_eval(input_dict, lfs):
