@@ -1,3 +1,5 @@
 .env
+bin/jupyter/.ipynb_checkpoints/
 etc/.env
-bin/tweets.db
+etc/database_store/
+
