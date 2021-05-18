@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect('../../etc/database_store/auto_tweets.db')
+conn = sqlite3.connect('../../etc/database_store/auto_tweets_2.db')
 print ("Opened database successfully")
 
 conn.execute('''CREATE TABLE TWEETS 
