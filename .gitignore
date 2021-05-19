@@ -1,5 +1,5 @@
 .env
 bin/jupyter/.ipynb_checkpoints/
 etc/.env
-etc/database_store/
+etc/
 
